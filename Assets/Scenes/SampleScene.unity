@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e6b7b5fa785e6a4cbd37cca802673fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlotData: {fileID: 11400000, guid: d43092e74710b4a42ad06429824d5e6d, type: 2}
 --- !u!1 &391087905
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,8 +381,8 @@ Transform:
   m_Children:
   - {fileID: 2108039590}
   - {fileID: 391087906}
-  - {fileID: 317352786}
   - {fileID: 1428682178}
+  - {fileID: 317352786}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619394800
