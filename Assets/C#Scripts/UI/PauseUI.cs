@@ -5,17 +5,9 @@ using UnityEngine;
 public class PauseUI : MonoBehaviour
 {
     private Animator anim;//动画
-
-    // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();//获取动画
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
     public void OnPauseButtonClick()//停止按钮
     {
