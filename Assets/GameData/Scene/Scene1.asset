@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d68a3bdb18651a4cb84072c94460d91, type: 3}
-  m_Name: PlayerData_Temp
+  m_Script: {fileID: 11500000, guid: 18e72d034afdb834c8466198b15fc666, type: 3}
+  m_Name: Scene1
   m_EditorClassIdentifier: 
-  Score: 0
+  SceneName: Scene1
+  Size: 0
+  ToPosition: {x: 0, y: 0, z: 0}
