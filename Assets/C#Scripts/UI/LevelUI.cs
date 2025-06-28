@@ -1,13 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelUI : MonoBehaviour
 {
+    public int LevelNumber;
+    public Button ChooseButton;
+    public SceneData SceneTOGO;
     public GameObject unlockGo;
     public GameObject lockGo;
 
@@ -16,15 +15,17 @@ public class LevelUI : MonoBehaviour
     public GameObject star1Go;
     public GameObject star2Go;
     public GameObject star3Go;
-    void Start()
+    private void Awake()
     {
-
+        ChooseButton.onClick.AddListener(ChooseLevel);
     }
-
-    // Update is called once per frame
-    void Update()
+    private void ChooseLevel()
     {
-
+        if (!lockGo.activeSelf)
+        {
+            SceneChangeManager.Instance.ChangeScene(SceneTOGO);
+            gameObject.transform.parent.parent.gameObject.SetActive(false);
+        }
     }
     public void Show(int Star)
     {
@@ -58,17 +59,5 @@ public class LevelUI : MonoBehaviour
                 star0Go.SetActive(true);
             }
         }
-    }
-    public void OnClick1()
-    {
-        SceneManager.LoadScene(2);
-    }
-    public void OnClick2()
-    {
-        SceneManager.LoadScene(3);
-    }
-    public void OnClick3()
-    {
-       SceneManager.LoadScene(4);
     }
 }

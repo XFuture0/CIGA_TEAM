@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   PlayerPosition: {x: 0, y: 0, z: 0}
-  StarDatas: []
+  StarDatas:
+  - Star: 0
+    Score: 3000
+    Level: 0
+  - Star: 0
+    Score: 3000
+    Level: 1
+  - Star: 0
+    Score: 3000
+    Level: 2
   RoomIndex: 0
   AudioVolume: 0
