@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class StartCanvs : MonoBehaviour
 {
     public GameObject ChooseCanvs;
+    public GameObject SettingCanvs;
     public Button StartButton;
     public Button SettingButton;
     public Button QuitButton;
@@ -30,10 +31,11 @@ public class StartCanvs : MonoBehaviour
     }
     private void OnSettingButton()
     {
-
+        gameObject.SetActive(false);
+        SettingCanvs.SetActive(true);
     }
     private void OnQuitButton()
     {
-
+        Application.Quit();
     }
 }

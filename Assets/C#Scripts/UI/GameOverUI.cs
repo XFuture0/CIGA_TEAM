@@ -1,33 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameOverUI : MonoBehaviour
 {
-    private int Star = 0;//星星数量
+    public GameObject ChooseCanvs;
     public GameObject Fail;
-    private Animator anim;//动画
     public StarUI starUI1;//获取一号星星
     public StarUI starUI2;//获取二号星星
     public StarUI starUI3;//获取三号星星
-    
+    public Button ReturnButton;
     private void Awake()
     {
-        anim = GetComponent<Animator>();//获取动画
-         
+        ReturnButton.onClick.AddListener(OnReturnButton);
     }
-
+    private void OnEnable()
+    {
+        Time.timeScale = 0;
+        Show(Scoremanager.Instance.scoreCanvs.StarCount);
+    }
     public void Show(int Star)//星星数值
     {
-        anim.SetTrigger("IsShow");
-        this.Star = Star;
+        Time.timeScale = 0;
+        ShowStar(Star);
     }
-    void Start()
-    {
-        Show(2);
-        
-    }
-    public void ShowStar()
+    public void ShowStar(int Star)
     {
         if (Star == 0)
         {
@@ -46,13 +44,12 @@ public class GameOverUI : MonoBehaviour
             starUI3.Show();
         }
     }
-    
-      public void OnRestartButtonClick()//重新开始按钮
+    public  void OnReturnButton()
     {
-         GameManager.Instance.RestartLevel();
+        Time.timeScale = 1;//时间为1，时间继续
+        ChooseCanvs.SetActive(true);
+        gameObject.SetActive(false);
+        SceneChangeManager.Instance.CloseScene(GameManager.Instance.PlayerData.SceneData);
     }
-    public void OnLevelListButtonClick()//下一关卡按钮
-    {
-        GameManager.Instance.LevelList();
-    }
+
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Scoremanager : SingleTon<Scoremanager>
 {
     public ScoreCanvs  scoreCanvs;
+    public TimeUI timeUI;
     public void SetScore(float score)
     {
         scoreCanvs.Score += score;
@@ -16,6 +17,7 @@ public class Scoremanager : SingleTon<Scoremanager>
             if(item.Level == Level)
             {
                 scoreCanvs.NeedScore = item.Score;
+                timeUI.time = item.Second;
             }
         }
     }

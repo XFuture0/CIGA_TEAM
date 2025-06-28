@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameManager : SingleTon<GameManager>
 {
+    public GameObject Player;
     public PlayerData PlayerData;
     public FadeCanvs FadeCanvs;
     public void FadeIn()

@@ -8,7 +8,7 @@ using System.Threading;
 
 public class TimeUI : MonoBehaviour
 {
-    [SerializeField] private float time = 60f;//倒计时
+    public float time;//倒计时
 
     public Text timeText;
 
@@ -21,6 +21,10 @@ public class TimeUI : MonoBehaviour
     void Update()
     {
         Timer();
+        if(Scoremanager.Instance.scoreCanvs.StarCount == 3)
+        {
+            StartCoroutine("GameOverUI");
+        }
     }
     private void Timer()
     {

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class VisitorAI : MonoBehaviour
 {
     public float Score;// 分数
+    public Vector3 BasePosition;
     [Header("恐惧值设置")]
     public float maxFear = 100f;       // 最大恐惧值
     public float fearIncreaseRate = 15f; // 每秒恐惧值增加量

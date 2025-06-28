@@ -7,10 +7,12 @@ public class PlayerData : ScriptableObject
     [System.Serializable]
     public class StarData
     {
+        public int Second;//秒数
         public int Star;//星星数
         public int Score;//分数
         public int Level;//序号
     }
+    public SceneData SceneData;
     public Vector3 PlayerPosition;//玩家位置
     public List<StarData> StarDatas = new List<StarData>();//记录每关的星星数
     public int RoomIndex;//当前通过关卡数
