@@ -5,8 +5,8 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     [Header("边缘滚动设置")]
-    public float edgeScrollSpeed = 25f;
-    public float edgeThreshold = 0.05f; // 屏幕边缘检测阈值（百分比）
+    public float edgeScrollSpeed;
+    public float edgeThreshold; // 屏幕边缘检测阈值（百分比）
     public float minX;          // 相机最小X位置
     public float maxX;           // 相机最大X位置
     public float minY;          // 相机最小Y位置
@@ -19,12 +19,6 @@ public class CameraMove : MonoBehaviour
         mainCamera = Camera.main;
 
     }
-
-    void Update()
-    {
-
-    }
-
     void LateUpdate()
     {
         EdgeScrollMovement();
@@ -66,6 +60,13 @@ public class CameraMove : MonoBehaviour
             transform.position = newPosition;
         }
     }
+    public void RefreshCameraPo(float Minx, float Miny, float Maxx, float Maxy)
+    {
+        minX = Minx;
+        maxX = Maxx;
+        minY = Miny;
+        maxY = Maxy;
+    }
 
     void ClampCameraPosition()
     {
@@ -74,6 +75,7 @@ public class CameraMove : MonoBehaviour
         float clampedY = Mathf.Clamp(transform.position.y, minY, maxY);
         transform.position = new Vector3(clampedX, clampedY, transform.position.z);
     }
+  
 }
 
 

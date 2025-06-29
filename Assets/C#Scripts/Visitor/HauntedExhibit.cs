@@ -16,22 +16,14 @@ public class HauntedExhibit : MonoBehaviour
     public bool isScaring = false;
     public bool isPossessed = false; // 是否被幽灵附身
     private List<VisitorAI> visitorsInRange = new List<VisitorAI>();
+    [Header("广播")]
+    public VoidEventSO UseEvent;
 
     void Start()
     {
         exhibitRenderer = GetComponent<SpriteRenderer>();
         originalColor = exhibitRenderer.color;
     }
-
-    void Update()
-    {
-        // 只有被附身时才能惊吓
-        if (isPossessed && !isScaring && Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(ScareCoroutine());
-        }
-    }
-
     // 外部调用激活惊吓
     public void ActivateScare()
     {
@@ -44,6 +36,7 @@ public class HauntedExhibit : MonoBehaviour
     IEnumerator ScareCoroutine()
     {
         isScaring = true;
+        UseEvent.RaiseEvent();
         // 创建计时器
         float timer = 0f;
 

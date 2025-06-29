@@ -17,12 +17,10 @@ public class GameOverUI : MonoBehaviour
     }
     private void OnEnable()
     {
-        Time.timeScale = 0;
-        Show(Scoremanager.Instance.scoreCanvs.StarCount);
+      //  Show(Scoremanager.Instance.scoreCanvs.StarCount);
     }
     public void Show(int Star)//星星数值
     {
-        Time.timeScale = 0;
         ShowStar(Star);
     }
     public void ShowStar(int Star)
@@ -44,12 +42,12 @@ public class GameOverUI : MonoBehaviour
             starUI3.Show();
         }
     }
-    public  void OnReturnButton()
+    public void OnReturnButton()
     {
-        Time.timeScale = 1;//时间为1，时间继续
         ChooseCanvs.SetActive(true);
-        gameObject.SetActive(false);
+        Fail.SetActive(false);
         SceneChangeManager.Instance.CloseScene(GameManager.Instance.PlayerData.SceneData);
+        gameObject.SetActive(false);
     }
 
 }

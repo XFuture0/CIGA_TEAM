@@ -7,7 +7,10 @@ using UnityEngine.UI;
 public class VisitorAI : MonoBehaviour
 {
     public float Score;// 分数
+    private SpriteRenderer spriteRenderer;
     public Vector3 BasePosition;
+    private Animator anim;
+    public AudioClip Escape;
     [Header("恐惧值设置")]
     public float maxFear = 100f;       // 最大恐惧值
     public float fearIncreaseRate = 15f; // 每秒恐惧值增加量
@@ -20,27 +23,41 @@ public class VisitorAI : MonoBehaviour
     public float avoidanceDuration = 2f; // 边界回避持续时间
     private bool isAvoiding = false;
     public float currentFear = 0f;    // 当前恐惧值
-    private bool isPanicking = false;  // 是否正在逃跑
+    public bool isPanicking = false;  // 是否正在逃跑
 
-    private float panicTimer = 0f;     // 逃跑计时器
+    public float panicTimer = 0f;     // 逃跑计时器
     private float directionTimer = 0f; // 方向切换计时器
     private float avoidanceTimer = 0f; // 回避计时器
     private float obstacleAvoidanceTimer = 0f; // 障碍回避计时器
     private float exhibitWatchTimer = 0f; // 展品观看计时器
     private float watchCooldownTimer = 0f; // 观看冷却计时器
+    public float ElevTimer = -2f;
 
     private int currentDirection = 1;  // 当前移动方向 (1=右, -1=左)
     private bool isAvoidingObstacle = false; // 是否在回避障碍物
     private bool isWatchingExhibit = false; // 是否在观看展品
     private bool canWatchExhibit = true; // 是否允许观看展品
+    public bool CanElev;
     private Rigidbody2D rb;
     public Text text;
     [Header("射线检测设置")]
     public float obstacleRayDistance = 1f; // 障碍物检测距离
-    public float exhibitRayDistance = 5f; // 展品检测距离
+    public float exhibitRayDistance = 1f; // 展品检测距离
     public float exhibitWatchProbability = 0.5f; // 观看展品概率
+    public LayerMask Exhabit;
     // 恐惧值加成
     private float fearMultiplier = 1f; // 恐惧值倍率（观看展品时翻倍）
+    public float ChangeAlphaSpeed;
+    public AudioClip WalkClip;
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+    private void OnEnable()
+    {
+        spriteRenderer.color = Color.white;
+    }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -50,15 +67,22 @@ public class VisitorAI : MonoBehaviour
 
     void Update()
     {
-        // 测试用，显示恐惧值
-        if (text != null)
+        if (isPanicking)
         {
-            text.text = $"{currentFear:F1}";
+            ChangeAlpha();
         }
         UpdateCooldowns();
-        UpdateFear();
         PerformRaycasts();
         HandleState();
+        CanSetElev();
+        if(rb.velocity.x >= 0)
+        {
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+        }
+        if(rb.velocity.x < 0)
+        {
+            gameObject.transform.localScale = new Vector3(-1, 1, 1);
+        }
     }
     void UpdateCooldowns()
     {
@@ -88,17 +112,21 @@ public class VisitorAI : MonoBehaviour
         RaycastHit2D exhibitHit = Physics2D.Raycast(
             transform.position,
             Vector2.up,
-            exhibitRayDistance
+            exhibitRayDistance,
+            Exhabit
         );
         // 处理障碍物检测
-        if (obstacleHit.collider != null && !isAvoidingObstacle && exhibitHit.collider.CompareTag("obstacle"))
+        if(exhibitHit.collider != null)
         {
-            StartObstacleAvoidance();
-        }
-        // 处理展品检测
-        if (exhibitHit.collider != null && exhibitHit.collider.CompareTag("Exhibit") && !isWatchingExhibit && canWatchExhibit)
-        {
-            TryStartWatchingExhibit();
+            if (obstacleHit.collider != null && !isAvoidingObstacle && exhibitHit.collider.CompareTag("obstacle"))
+            {
+                StartObstacleAvoidance();
+            }
+            // 处理展品检测
+            if (exhibitHit.collider.gameObject != null && !isWatchingExhibit && canWatchExhibit)
+            {
+                TryStartWatchingExhibit();
+            }
         }
     }
     void StartObstacleAvoidance()
@@ -121,23 +149,14 @@ public class VisitorAI : MonoBehaviour
 
     void StartWatchingExhibit()
     {
+
         isWatchingExhibit = true;
         exhibitWatchTimer = 1f; // 观看1秒
         rb.velocity = Vector2.zero; // 停止移动
-
+        SetAnim("Idle");
         // 恐惧值增长翻倍
         fearMultiplier = 2f;
-
         Debug.Log("开始观看展品，恐惧值增长翻倍");
-    }
-    void UpdateFear()
-    {
-        // 逃跑结束后减少恐惧值
-        if (isPanicking && panicTimer <= 0)
-        {
-            currentFear -= fearDecreaseRate * Time.deltaTime;
-            currentFear = Mathf.Clamp(currentFear, 0, maxFear);
-        }
     }
 
     void HandleState()
@@ -181,7 +200,6 @@ public class VisitorAI : MonoBehaviour
     {
         // 展品观看逻辑
         exhibitWatchTimer -= Time.deltaTime;
-
         // 观看时间结束
         if (exhibitWatchTimer <= 0)
         {
@@ -195,7 +213,7 @@ public class VisitorAI : MonoBehaviour
     {
         // 逃跑逻辑
         panicTimer -= Time.deltaTime;
-        rb.velocity = new Vector2(-panicSpeed, 0);
+        OnEscape();
 
         // 逃跑结束检测
         if (panicTimer <= 0)
@@ -260,7 +278,7 @@ public class VisitorAI : MonoBehaviour
         if (!isWatchingExhibit) return;
 
         Debug.Log("观看展品时被惊吓，将中断观看");
-
+        SetAnim("On");
         // 设置1秒后结束观看状态
         exhibitWatchTimer = 1f;
 
@@ -272,6 +290,7 @@ public class VisitorAI : MonoBehaviour
     {
         // 随机选择新方向
         currentDirection = (Random.Range(0, 2) == 0 ? -1 : 1);
+        SetAnim("Walk");
         directionTimer = Random.Range(1f, 4f); // 随机持续时间 1-4秒
     }
 
@@ -297,10 +316,92 @@ public class VisitorAI : MonoBehaviour
     {
         isPanicking = true;
         panicTimer = 5f; // 设置逃跑持续时间
-        currentDirection = -1; // 强制向左逃跑
     }
     private void OnDisable()
     {
         Scoremanager.Instance.SetScore(Score);
+    }
+    private void OnEscape()
+    {
+        normalSpeed = 1.5f;
+        panicSpeed = 3f;
+        SetAnim("Run");
+        AudioManager.Instance.SetAudioClip(Escape, "NPC");
+        if(gameObject.transform.position.y > 0)
+        {
+            rb.velocity = new Vector2(currentDirection * panicSpeed, 0);
+        }
+        if(gameObject.transform.position.y < 0)
+        {
+            rb.velocity = new Vector2(-currentDirection * panicSpeed, 0);
+        }
+    }
+    private void CanSetElev()
+    {
+        if(ElevTimer > -2)
+        {
+            ElevTimer -= Time.deltaTime;
+        }
+        if(ElevTimer < 0)
+        {
+            CanElev = true;
+        }
+        if(ElevTimer >= 0)
+        { 
+            CanElev = false;
+        }
+    }
+    public void ChangeSpeed()
+    {
+        if (isPanicking)
+        {
+            panicSpeed = -panicSpeed;
+        }
+        else
+        {
+            normalSpeed = -normalSpeed;
+        }
+    }
+    private void SetAnim(string animName)
+    {
+        if (animName == "Idle" && rb.velocity != Vector2.zero)
+        {
+            return;
+        }
+        if(animName != "On")
+        {
+            anim.SetBool("On", false);
+        }
+        if(animName != "Run")
+        {
+            anim.SetBool("Run", false);
+        }
+        if(animName != "Walk")
+        {
+            anim.SetBool("Walk", false);
+        }
+        if(animName == "Idle")
+        {
+            return;
+        }
+        anim.SetBool(animName, true);
+    }
+    private void ChangeAlpha()
+    {
+        var NowSpeed = ChangeAlphaSpeed;
+        if (spriteRenderer.color.a < 0.5f)
+        {
+            NowSpeed = ChangeAlphaSpeed * 4;
+        }
+        var alpha = Mathf.Lerp(spriteRenderer.color.a, 0, NowSpeed);
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+        if(alpha < 0.1f)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+    private void NPCWalkAudio()
+    {
+        AudioManager.Instance.SetAudioClip(WalkClip,"NPC");
     }
 }

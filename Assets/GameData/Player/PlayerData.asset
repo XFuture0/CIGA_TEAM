@@ -15,17 +15,29 @@ MonoBehaviour:
   SceneData: {fileID: 11400000, guid: f562aa42a6ab56a4cac430c904177d7a, type: 2}
   PlayerPosition: {x: 0, y: 0, z: 0}
   StarDatas:
-  - Second: 10
+  - Second: 90
     Star: 0
     Score: 3000
+    minX: 1.85
+    maxX: 9.2
+    minY: -0.9
+    maxY: 3.8
     Level: 0
-  - Second: 600
+  - Second: 90
     Star: 0
-    Score: 3000
+    Score: 5000
+    minX: 1.85
+    maxX: 9.2
+    minY: -0.9
+    maxY: 3.8
     Level: 1
-  - Second: 600
+  - Second: 150
     Star: 0
-    Score: 3000
+    Score: 7000
+    minX: 1.85
+    maxX: 30
+    minY: -0.9
+    maxY: 3.8
     Level: 2
   RoomIndex: 0
   AudioVolume: 0

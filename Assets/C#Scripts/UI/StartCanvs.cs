@@ -10,6 +10,7 @@ public class StartCanvs : MonoBehaviour
     public Button StartButton;
     public Button SettingButton;
     public Button QuitButton;
+    public AudioClip Click;
     private void Awake()
     {
         StartButton.onClick.AddListener(OnStartButton);
@@ -26,16 +27,19 @@ public class StartCanvs : MonoBehaviour
     }
     private void OnStartButton()
     {
+        AudioManager.Instance.SetAudioClip(Click, "FX");
         gameObject.SetActive(false);
         ChooseCanvs.SetActive(true);
     }
     private void OnSettingButton()
     {
+        AudioManager.Instance.SetAudioClip(Click, "FX");
         gameObject.SetActive(false);
         SettingCanvs.SetActive(true);
     }
     private void OnQuitButton()
     {
+        AudioManager.Instance.SetAudioClip(Click, "FX");
         Application.Quit();
     }
 }

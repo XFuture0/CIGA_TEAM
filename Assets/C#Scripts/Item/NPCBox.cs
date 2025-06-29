@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class NPCBox : MonoBehaviour
 {
-    public GameObject Door;
     private void OnEnable()
     {
-        Door.SetActive(false);
         StartCoroutine(OnStartGame());
     }
     private IEnumerator OnStartGame()
@@ -15,9 +13,15 @@ public class NPCBox : MonoBehaviour
         for(int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
-            transform.GetChild(i).transform.position = transform.GetChild(i).GetComponent<VisitorAI>().BasePosition;
+            if (transform.GetChild(i).gameObject.tag == "visitor")
+            {
+                transform.GetChild(i).transform.position = transform.GetChild(i).GetComponent<VisitorAI>().BasePosition;
+            }
+            else if (transform.GetChild(i).gameObject.tag == "Guard")
+            {
+                transform.GetChild(i).transform.position = transform.GetChild(i).GetComponent<Guard>().BasePosition;
+            }
         }
         yield return new WaitForSeconds(0.5f);
-        Door.SetActive(true);
     }
 }

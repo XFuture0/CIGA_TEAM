@@ -10,6 +10,10 @@ public class PlayerData : ScriptableObject
         public int Second;//秒数
         public int Star;//星星数
         public int Score;//分数
+        public float minX;          // 相机最小X位置
+        public float maxX;           // 相机最大X位置
+        public float minY;          // 相机最小Y位置
+        public float maxY;           // 相机最大Y位置
         public int Level;//序号
     }
     public SceneData SceneData;

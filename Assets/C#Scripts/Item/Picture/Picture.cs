@@ -5,6 +5,8 @@ using UnityEngine;
 public class Picture : MonoBehaviour
 {
     private Animator anim;
+    public GameObject Light1;
+    public GameObject Light2;
     [Header("事件监听")]
     public VoidEventSO UseEvent;
     [Header("惊吓计时器")]
@@ -42,5 +44,15 @@ public class Picture : MonoBehaviour
         {
             ScareTime = gameObject.GetComponent<HauntedExhibit>().scareDuration;
         }
+    }
+    private void OpenLight()
+    {
+        Light1.SetActive(true);
+        Light2.SetActive(true);
+    }
+    private void CloseLight()
+    {
+        Light1.SetActive(false);
+        Light2.SetActive(false);
     }
 }

@@ -5,9 +5,9 @@ using UnityEngine.Events;
 [CreateAssetMenu(menuName = "Event/AudioEventSO")]
 public class AudioEventSO : ScriptableObject
 {
-    public UnityAction<AudioClip> OnAudioEventRaised;
-    public void RaiseEvent(AudioClip audioClip)
+    public UnityAction<AudioClip,string> OnAudioEventRaised;
+    public void RaiseEvent(AudioClip audioClip,string Name)
     {
-        OnAudioEventRaised?.Invoke(audioClip);
+        OnAudioEventRaised?.Invoke(audioClip,Name);
     }
 }

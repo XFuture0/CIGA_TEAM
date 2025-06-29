@@ -10,6 +10,7 @@ public class SettingCanvs : MonoBehaviour
     public GameObject StartCanvs;
     [SerializeField] private Button returnButton;
     public Slider volumeSlider;
+    public AudioClip Click;
     [Header("ÒôÆµµ÷½ÚÆ÷")]
     public AudioMixer MainAudio;
 
@@ -27,6 +28,7 @@ public class SettingCanvs : MonoBehaviour
 
     public void ReturnOnclick()
     {
+        AudioManager.Instance.SetAudioClip(Click, "FX");
         StartCanvs.SetActive(true);
         gameObject.SetActive(false);
     }

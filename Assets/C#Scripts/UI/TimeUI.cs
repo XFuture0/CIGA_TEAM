@@ -9,21 +9,24 @@ using System.Threading;
 public class TimeUI : MonoBehaviour
 {
     public float time;//倒计时
-
     public Text timeText;
-
     private bool isTimeOut = false;
-
     public GameObject gameOverUI;
-
-
-
+    public VoidEventSO GameOverevent;
+    public AudioClip Victory;
+    public AudioClip GameOver;
+    public bool IsStop;
+    public GameObject Fail;
     void Update()
     {
-        Timer();
+        if (!IsStop)
+        {
+            Timer();
+        }
         if(Scoremanager.Instance.scoreCanvs.StarCount == 3)
         {
-            StartCoroutine("GameOverUI");
+            AudioManager.Instance.SetAudioClip(Victory, "NPC");
+            gameOverUI.SetActive(true);
         }
     }
     private void Timer()
@@ -42,14 +45,30 @@ public class TimeUI : MonoBehaviour
             {
                 isTimeOut = true;
                 timeText.text = "00:00";
-                StartCoroutine("GameOverUI");
+                gameOverUI.SetActive(true);
+                AudioManager.Instance.SetAudioClip(Victory, "NPC");
             }
         }
     }
-    IEnumerator GameOverUI()
+    private void OnEnable()
     {
-        gameOverUI.SetActive(true);
-         yield break; 
+        GameOverevent.OnEventRaised += OnGameOver;
     }
 
+    private void OnGameOver()
+    {
+        if (!gameOverUI.activeSelf)
+        {
+            IsStop = true;
+            Fail.SetActive(true);
+            AudioManager.Instance.SetAudioClip(GameOver, "FX");
+            GameManager.Instance.Player.SetActive(false);
+            gameOverUI.SetActive(true);
+        }
+    }
+
+    private void OnDisable()
+    {
+        GameOverevent.OnEventRaised -= OnGameOver;
+    }
 }

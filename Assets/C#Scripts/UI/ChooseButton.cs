@@ -7,6 +7,7 @@ public class ChooseButton : MonoBehaviour
 {
     public Button ReturnButton;
     public GameObject StarCanvs;
+    public AudioClip Click;
     private void Awake()
     {
         ReturnButton.onClick.AddListener(OnReturnButton);
@@ -14,6 +15,7 @@ public class ChooseButton : MonoBehaviour
     }
     private void OnReturnButton()
     {
+        AudioManager.Instance.SetAudioClip(Click, "FX");
         StarCanvs.SetActive(true);
         gameObject.SetActive(false);
     }

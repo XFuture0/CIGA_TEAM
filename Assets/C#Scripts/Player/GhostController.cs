@@ -7,23 +7,26 @@ public class GhostController : MonoBehaviour
     [Header("移动设置")]
     public float moveSpeed = 5f;
     public float minDistanceToTarget = 0.1f;
-
+    private bool IsSet;
     [Header("附身设置")]
     public Color possessionColor = new Color(0.8f, 0.2f, 0.8f, 1f); // 附身时的颜色
 
-    private Vector3 targetPosition;
     private bool isMoving = false;
     private HauntedExhibit possessedExhibit; // 当前附身的展品
     private SpriteRenderer ghostRenderer;
     private Color originalColor;
-    [Header("广播")]
-    public VoidEventSO UseEvent;
-
-    void Start()
+    private Vector3 targetPosition;
+    public LayerMask Exhibit;
+    public AudioEventSO AudioEvent;
+    public AudioClip audioClip;
+    void Awake()
     {
         ghostRenderer = GetComponent<SpriteRenderer>();
-        originalColor = ghostRenderer.color;
-        targetPosition = transform.position; // 初始位置
+    }
+    private void OnEnable()
+    {
+        ghostRenderer.enabled = true;
+        ghostRenderer.color = Color.white;
     }
 
     void Update()
@@ -39,18 +42,36 @@ public class GhostController : MonoBehaviour
         {
             MoveToTarget();
         }
-
+        if (possessedExhibit != null && Physics2D.OverlapCircle(transform.position, 0.1f, Exhibit))
+        {
+            if (Physics2D.OverlapCircle(transform.position, 0.1f, Exhibit).gameObject == possessedExhibit.gameObject && !IsSet)
+            {
+                IsSet = true;
+                AudioEvent.RaiseEvent(audioClip,"Player");
+            }
+        }
         // 附身状态下空格键惊吓
         if (IsPossessing() && Input.GetKeyDown(KeyCode.Space))
         {
-            UseEvent.RaiseEvent();
-            possessedExhibit.ActivateScare();
+            if(possessedExhibit != null && Physics2D.OverlapCircle(transform.position, 0.1f, Exhibit))
+            {
+                if (Physics2D.OverlapCircle(transform.position, 0.1f, Exhibit).gameObject == possessedExhibit.gameObject)
+                {
+                    possessedExhibit.ActivateScare();
+                }
+            }
         }
 
         // 退出附身状态
         if (IsPossessing() && Input.GetKeyDown(KeyCode.E))
         {
-            ReleasePossession();
+            if(possessedExhibit != null)
+            {
+                if (!possessedExhibit.isScaring)
+                {
+                    ReleasePossession();
+                }
+            }
         }
     }
 
@@ -61,17 +82,18 @@ public class GhostController : MonoBehaviour
         mousePos.z = transform.position.z; // 保持Z轴一致
 
         // 检测点击的是否是展品
-        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (hit.collider != null && hit.collider.CompareTag("Exhibit"))
+        RaycastHit2D[] hit = Physics2D.RaycastAll(mousePos, Vector2.zero);
+        foreach (var item in hit)
         {
-            // 尝试附身展品
-            AttemptPossession(hit.collider.gameObject);
+            if (item.collider != null && item.collider.CompareTag("Exhibit"))
+            {
+                // 尝试附身展品
+                AttemptPossession(item.collider.gameObject);
+                return;
+            }
         }
-        else
-        {
-            // 移动到点击位置
-            SetMoveTarget(mousePos);
-        }
+        // 移动到点击位置
+        SetMoveTarget(mousePos);
     }
 
     void AttemptPossession(GameObject exhibit)
@@ -95,7 +117,7 @@ public class GhostController : MonoBehaviour
         SetMoveTarget(possessedExhibit.transform.position);
 
         // 幽灵变色表示附身状态
-        ghostRenderer.color = possessionColor;
+    //    ghostRenderer.color = possessionColor;
 
         Debug.Log("幽灵附身到: " + possessedExhibit.name);
     }
@@ -109,8 +131,9 @@ public class GhostController : MonoBehaviour
         possessedExhibit = null;
 
         // 恢复幽灵颜色
-        ghostRenderer.color = originalColor;
+        ghostRenderer.color = Color.white;
         ghostRenderer.enabled = true;
+        IsSet = false;
         Debug.Log("幽灵解除附身");
     }
 
